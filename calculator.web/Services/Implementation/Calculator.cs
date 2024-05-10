@@ -99,10 +99,8 @@ namespace calculator.web.Services.Implementation
 
         #region Constructors
 
-        /// <summary>
-        /// Initialize new instance of MathParser (symbol of decimal separator is read from regional
-        /// settings in system)
-        /// </summary>
+        /// <summary> Initialize new instance of MathParser (symbol of decimal separator is read
+        /// from regional
         public Calculator()
         {
             try
@@ -115,10 +113,7 @@ namespace calculator.web.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// Initialize new instance of MathParser
-        /// </summary>
-        /// <param name="decimalSeparator">Set decimal separator</param>
+        /// <summary> Initialize new instance of Calculator
         public Calculator(char decimalSeparator)
         {
             this.decimalSeparator = decimalSeparator;
@@ -126,11 +121,7 @@ namespace calculator.web.Services.Implementation
 
         #endregion Constructors
 
-        /// <summary>
-        /// Produce result of the given math expression
-        /// </summary>
-        /// <param name="expression">Math expression (infix/standard notation)</param>
-        /// <returns>Result</returns>
+        /// <summary> Produce result of the given math expression
         public double Parse(string expression, bool isRadians = true)
         {
             this.isRadians = isRadians;
@@ -165,11 +156,7 @@ namespace calculator.web.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// Produce formatted string by the given string
-        /// </summary>
-        /// <param name="expression">Unformatted math expression</param>
-        /// <returns>Formatted math expression</returns>
+        /// <summary> Produce formatted string by the given string
         private string FormatString(string expression)
         {
             if (string.IsNullOrEmpty(expression))
@@ -180,7 +167,7 @@ namespace calculator.web.Services.Implementation
             StringBuilder formattedString = new StringBuilder();
             int balanceOfParenth = 0; // Check number of parenthesis
 
-            // Format string in one iteration and check number of parenthesis (this function do 2
+            // Format string in one iteration and check number of parenthesis (this function does
             // tasks because performance priority)
             for (int i = 0; i < expression.Length; i++)
             {
@@ -219,11 +206,7 @@ namespace calculator.web.Services.Implementation
 
         #region Convert to Reverse-Polish Notation
 
-        /// <summary>
-        /// Produce math expression in reverse polish notation by the given string
-        /// </summary>
-        /// <param name="expression">Math expression in infix notation</param>
-        /// <returns>Math expression in postfix notation (RPN)</returns>
+        /// <summary> Produce math expression in reverse polish notation by the given string
         private string ConvertToRPN(string expression)
         {
             int pos = 0; // Current position of lexical analysis
@@ -256,12 +239,7 @@ namespace calculator.web.Services.Implementation
             return outputString.ToString();
         }
 
-        /// <summary>
-        /// Produce token by the given math expression
-        /// </summary>
-        /// <param name="expression">Math expression in infix notation</param>
-        /// <param name="pos">       Current position in string for lexical analysis</param>
-        /// <returns>Token</returns>
+        /// <summary> Produce token by the given math expression
         private string LexicalAnalysisInfixNotation(string expression, ref int pos)
         {
             // Receive first char
@@ -377,13 +355,7 @@ namespace calculator.web.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// Syntax analysis of infix notation
-        /// </summary>
-        /// <param name="token">       Token</param>
-        /// <param name="outputString">Output string (math expression in RPN)</param>
-        /// <param name="stack">       Stack which contains operators (or functions)</param>
-        /// <returns>Output string (math expression in RPN)</returns>
+        /// <summary> Syntax analysis of infix notation
         private StringBuilder SyntaxAnalysisInfixNotation(string token, StringBuilder outputString, Stack<string> stack)
         {
             // If it's a number just put to string
@@ -420,8 +392,6 @@ namespace calculator.web.Services.Implementation
             }
             else
             {
-                // While priority of elements at peek of stack >= (>) token's priority put these
-                // elements to output string
                 while (stack.Count > 0 &&
                     Priority(token, stack.Peek()))
                 {
@@ -434,9 +404,7 @@ namespace calculator.web.Services.Implementation
             return outputString;
         }
 
-        /// <summary>
-        /// Is priority of token less (or equal) to priority of p
-        /// </summary>
+        /// <summary> Is priority of token less (or equal) to priority of p
         private bool Priority(string token, string p)
         {
             return IsRightAssociated(token) ?
@@ -444,17 +412,13 @@ namespace calculator.web.Services.Implementation
                 GetPriority(token) <= GetPriority(p);
         }
 
-        /// <summary>
-        /// Is right associated operator
-        /// </summary>
+        /// <summary> Is right associated operator
         private bool IsRightAssociated(string token)
         {
             return token == Degree;
         }
 
-        /// <summary>
-        /// Get priority of operator
-        /// </summary>
+        /// <summary> Get priority of operator
         private int GetPriority(string token)
         {
             switch (token)
@@ -466,30 +430,9 @@ namespace calculator.web.Services.Implementation
                 case Minus:
                     return 2;
 
-                case UnPlus:
-                case UnMinus:
-                    return 6;
-
                 case Multiply:
                 case Divide:
                     return 4;
-
-                case Degree:
-                case Sqrt:
-                    return 8;
-
-                case Sin:
-                case Cos:
-                case Tg:
-                case Ctg:
-                case Sh:
-                case Ch:
-                case Th:
-                case Log:
-                case Ln:
-                case Exp:
-                case Abs:
-                    return 10;
 
                 default:
                     throw new ArgumentException("Unknown operator");
@@ -500,11 +443,6 @@ namespace calculator.web.Services.Implementation
 
         #region Calculate expression in RPN
 
-        /// <summary>
-        /// Calculate expression in reverse-polish notation
-        /// </summary>
-        /// <param name="expression">Math expression in reverse-polish notation</param>
-        /// <returns>Result</returns>
         private double Calculate(string expression)
         {
             int pos = 0; // Current position of lexical analysis
@@ -527,12 +465,6 @@ namespace calculator.web.Services.Implementation
             return stack.Pop();
         }
 
-        /// <summary>
-        /// Produce token by the given math expression
-        /// </summary>
-        /// <param name="expression">Math expression in reverse-polish notation</param>
-        /// <param name="pos">       Current position of lexical analysis</param>
-        /// <returns>Token</returns>
         private string LexicalAnalysisRPN(string expression, ref int pos)
         {
             StringBuilder token = new StringBuilder();
@@ -553,10 +485,6 @@ namespace calculator.web.Services.Implementation
 
         /// <summary>
         /// Syntax analysis of reverse-polish notation
-        /// </summary>
-        /// <param name="stack">Stack which contains operands</param>
-        /// <param name="token">Token</param>
-        /// <returns>Stack which contains operands</returns>
         private Stack<double> SyntaxAnalysisRPN(Stack<double> stack, string token)
         {
             // if it's operand then just push it to stack
@@ -565,72 +493,6 @@ namespace calculator.web.Services.Implementation
                 stack.Push(double.Parse(token.Remove(0, 1)));
             }
             // Otherwise apply operator or function to elements in stack
-            else if (NumberOfArguments(token) == 1)
-            {
-                double arg = stack.Pop();
-                double rst;
-
-                switch (token)
-                {
-                    case UnPlus:
-                        rst = arg;
-                        break;
-
-                    case UnMinus:
-                        rst = -arg;
-                        break;
-
-                    case Sqrt:
-                        rst = Math.Sqrt(arg);
-                        break;
-
-                    case Sin:
-                        rst = ApplyTrigFunction(Math.Sin, arg);
-                        break;
-
-                    case Cos:
-                        rst = ApplyTrigFunction(Math.Cos, arg);
-                        break;
-
-                    case Tg:
-                        rst = ApplyTrigFunction(Math.Tan, arg);
-                        break;
-
-                    case Ctg:
-                        rst = 1 / ApplyTrigFunction(Math.Tan, arg);
-                        break;
-
-                    case Sh:
-                        rst = Math.Sinh(arg);
-                        break;
-
-                    case Ch:
-                        rst =
-                        rst = Math.Cosh(arg);
-                        break;
-
-                    case Th:
-                        rst = Math.Tanh(arg);
-                        break;
-
-                    case Ln:
-                        rst = Math.Log(arg);
-                        break;
-
-                    case Exp:
-                        rst = Math.Exp(arg);
-                        break;
-
-                    case Abs:
-                        rst = Math.Abs(arg);
-                        break;
-
-                    default:
-                        throw new ArgumentException("Unknown operator");
-                }
-
-                stack.Push(rst);
-            }
             else
             {
                 // otherwise operator's number of arguments equals to 2
@@ -662,14 +524,6 @@ namespace calculator.web.Services.Implementation
                         rst = arg1 / arg2;
                         break;
 
-                    case Degree:
-                        rst = Math.Pow(arg1, arg2);
-                        break;
-
-                    case Log:
-                        rst = Math.Log(arg2, arg1);
-                        break;
-
                     default:
                         throw new ArgumentException("Unknown operator");
                 }
@@ -681,50 +535,15 @@ namespace calculator.web.Services.Implementation
         }
 
         /// <summary>
-        /// Apply trigonometric function
-        /// </summary>
-        /// <param name="func">Trigonometric function</param>
-        /// <param name="arg"> Argument</param>
-        /// <returns>Result of function</returns>
-        private double ApplyTrigFunction(Func<double, double> func, double arg)
-        {
-            if (!isRadians)
-            {
-                arg = arg * Math.PI / 180; // Convert value to degree
-            }
-
-            return func(arg);
-        }
-
-        /// <summary>
         /// Produce number of arguments for the given operator
-        /// </summary>
         private int NumberOfArguments(string token)
         {
             switch (token)
             {
-                case UnPlus:
-                case UnMinus:
-                case Sqrt:
-                case Tg:
-                case Sh:
-                case Ch:
-                case Th:
-                case Ln:
-                case Ctg:
-                case Sin:
-                case Cos:
-                case Exp:
-                case Abs:
-                    return 1;
-
                 case Plus:
                 case Minus:
                 case Multiply:
                 case Divide:
-                case Degree:
-                case Log:
-                    return 2;
 
                 default:
                     throw new ArgumentException("Unknown operator");
