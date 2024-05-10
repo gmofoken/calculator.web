@@ -21,36 +21,17 @@ namespace calculator.web.Services.Implementation
         #region Internal tokens
 
         private const string Plus = OperatorMarker + "+";
-        private const string UnPlus = OperatorMarker + "un+";
         private const string Minus = OperatorMarker + "-";
-        private const string UnMinus = OperatorMarker + "un-";
         private const string Multiply = OperatorMarker + "*";
         private const string Divide = OperatorMarker + "/";
         private const string Degree = OperatorMarker + "^";
         private const string LeftParent = OperatorMarker + "(";
         private const string RightParent = OperatorMarker + ")";
-        private const string Sqrt = FunctionMarker + "sqrt";
-        private const string Sin = FunctionMarker + "sin";
-        private const string Cos = FunctionMarker + "cos";
-        private const string Tg = FunctionMarker + "tg";
-        private const string Ctg = FunctionMarker + "ctg";
-        private const string Sh = FunctionMarker + "sh";
-        private const string Ch = FunctionMarker + "ch";
-        private const string Th = FunctionMarker + "th";
-        private const string Log = FunctionMarker + "log";
-        private const string Ln = FunctionMarker + "ln";
-        private const string Exp = FunctionMarker + "exp";
-        private const string Abs = FunctionMarker + "abs";
 
         #endregion Internal tokens
 
         #region Dictionaries (containts supported input tokens, exclude number)
 
-        // Key -> supported input token, Value -> internal token or number
-
-        /// <summary>
-        /// Contains supported operators
-        /// </summary>
         private readonly Dictionary<string, string> supportedOperators =
             new Dictionary<string, string>
             {
@@ -58,36 +39,19 @@ namespace calculator.web.Services.Implementation
                 { "-", Minus },
                 { "*", Multiply },
                 { "/", Divide },
-                { "^", Degree },
                 { "(", LeftParent },
                 { ")", RightParent }
             };
 
-        /// <summary>
-        /// Contains supported functions
-        /// </summary>
+        /// <summary> TO DO
         private readonly Dictionary<string, string> supportedFunctions =
             new Dictionary<string, string>
             {
-                { "sqrt", Sqrt },
-                { "√", Sqrt },
-                { "sin", Sin },
-                { "cos", Cos },
-                { "tg", Tg },
-                { "ctg", Ctg },
-                { "sh", Sh },
-                { "ch", Ch },
-                { "th", Th },
-                { "log", Log },
-                { "exp", Exp },
-                { "abs", Abs }
             };
 
         private readonly Dictionary<string, string> supportedConstants =
             new Dictionary<string, string>
             {
-                {"pi", NumberMaker +  Math.PI.ToString() },
-                {"e", NumberMaker + Math.E.ToString() }
             };
 
         #endregion Dictionaries (containts supported input tokens, exclude number)
@@ -99,8 +63,8 @@ namespace calculator.web.Services.Implementation
 
         #region Constructors
 
-        /// <summary> Initialize new instance of MathParser (symbol of decimal separator is read
-        /// from regional
+        /// <summary>
+        /// Initialize new instance of MathParser (symbol of decimal separator is read from regional
         public Calculator()
         {
             try
@@ -113,7 +77,10 @@ namespace calculator.web.Services.Implementation
             }
         }
 
-        /// <summary> Initialize new instance of Calculator
+        /// <summary>
+        /// Initialize new instance of MathParser
+        /// </summary>
+        /// <param name="decimalSeparator">Set decimal separator</param>
         public Calculator(char decimalSeparator)
         {
             this.decimalSeparator = decimalSeparator;
@@ -167,7 +134,7 @@ namespace calculator.web.Services.Implementation
             StringBuilder formattedString = new StringBuilder();
             int balanceOfParenth = 0; // Check number of parenthesis
 
-            // Format string in one iteration and check number of parenthesis (this function does
+            // Format string in one iteration and check number of parenthesis (this function do 2
             // tasks because performance priority)
             for (int i = 0; i < expression.Length; i++)
             {
@@ -256,38 +223,13 @@ namespace calculator.web.Services.Implementation
                 switch (token.ToString())
                 {
                     case "+":
-                        return isUnary ? UnPlus : Plus;
+                        return  Plus;
 
                     case "-":
-                        return isUnary ? UnMinus : Minus;
+                        return  Minus;
 
                     default:
                         return supportedOperators[token.ToString()];
-                }
-            }
-            else if (Char.IsLetter(token[0])
-                || supportedFunctions.ContainsKey(token.ToString())
-                || supportedConstants.ContainsKey(token.ToString()))
-            {
-                // Read function or constant name
-
-                while (++pos < expression.Length
-                    && Char.IsLetter(expression[pos]))
-                {
-                    token.Append(expression[pos]);
-                }
-
-                if (supportedFunctions.ContainsKey(token.ToString()))
-                {
-                    return supportedFunctions[token.ToString()];
-                }
-                else if (supportedConstants.ContainsKey(token.ToString()))
-                {
-                    return supportedConstants[token.ToString()];
-                }
-                else
-                {
-                    throw new ArgumentException("Unknown token");
                 }
             }
             else if (Char.IsDigit(token[0]) || token[0] == decimalSeparator)
@@ -324,29 +266,6 @@ namespace calculator.web.Services.Implementation
                     }
                 }
 
-                // Read scientific notation (suffix)
-                if (pos + 1 < expression.Length && expression[pos] == 'e'
-                    && (Char.IsDigit(expression[pos + 1])
-                        || (pos + 2 < expression.Length
-                            && (expression[pos + 1] == '+'
-                                || expression[pos + 1] == '-')
-                            && Char.IsDigit(expression[pos + 2]))))
-                {
-                    token.Append(expression[pos++]); // e
-
-                    if (expression[pos] == '+' || expression[pos] == '-')
-                        token.Append(expression[pos++]); // sign
-
-                    while (pos < expression.Length
-                        && Char.IsDigit(expression[pos]))
-                    {
-                        token.Append(expression[pos++]); // power
-                    }
-
-                    // Convert number from scientific notation to decimal notation
-                    return NumberMaker + Convert.ToDouble(token.ToString());
-                }
-
                 return NumberMaker + token.ToString();
             }
             else
@@ -355,18 +274,13 @@ namespace calculator.web.Services.Implementation
             }
         }
 
-        /// <summary> Syntax analysis of infix notation
+        /// <summary> Syntax analysis of infix notation)</returns>
         private StringBuilder SyntaxAnalysisInfixNotation(string token, StringBuilder outputString, Stack<string> stack)
         {
             // If it's a number just put to string
             if (token[0] == NumberMaker[0])
             {
                 outputString.Append(token);
-            }
-            else if (token[0] == FunctionMarker[0])
-            {
-                // if it's a function push to stack
-                stack.Push(token);
             }
             else if (token == LeftParent)
             {
@@ -392,6 +306,8 @@ namespace calculator.web.Services.Implementation
             }
             else
             {
+                // While priority of elements at peek of stack >= (>) token's priority put these
+                // elements to output string
                 while (stack.Count > 0 &&
                     Priority(token, stack.Peek()))
                 {
@@ -433,6 +349,7 @@ namespace calculator.web.Services.Implementation
                 case Multiply:
                 case Divide:
                     return 4;
+                    return 10;
 
                 default:
                     throw new ArgumentException("Unknown operator");
@@ -443,6 +360,7 @@ namespace calculator.web.Services.Implementation
 
         #region Calculate expression in RPN
 
+        /// <summary> Calculate expression in reverse-polish notation
         private double Calculate(string expression)
         {
             int pos = 0; // Current position of lexical analysis
@@ -465,6 +383,7 @@ namespace calculator.web.Services.Implementation
             return stack.Pop();
         }
 
+        /// <summary> Produce token by the given math expression
         private string LexicalAnalysisRPN(string expression, ref int pos)
         {
             StringBuilder token = new StringBuilder();
@@ -483,8 +402,7 @@ namespace calculator.web.Services.Implementation
             return token.ToString();
         }
 
-        /// <summary>
-        /// Syntax analysis of reverse-polish notation
+        /// <summary> Syntax analysis of reverse-polish notation
         private Stack<double> SyntaxAnalysisRPN(Stack<double> stack, string token)
         {
             // if it's operand then just push it to stack
@@ -492,11 +410,8 @@ namespace calculator.web.Services.Implementation
             {
                 stack.Push(double.Parse(token.Remove(0, 1)));
             }
-            // Otherwise apply operator or function to elements in stack
             else
             {
-                // otherwise operator's number of arguments equals to 2
-
                 double arg2 = stack.Pop();
                 double arg1 = stack.Pop();
 
@@ -534,8 +449,18 @@ namespace calculator.web.Services.Implementation
             return stack;
         }
 
-        /// <summary>
-        /// Produce number of arguments for the given operator
+        /// <summary> Apply trigonometric function
+        private double ApplyTrigFunction(Func<double, double> func, double arg)
+        {
+            if (!isRadians)
+            {
+                arg = arg * Math.PI / 180; // Convert value to degree
+            }
+
+            return func(arg);
+        }
+
+        /// <summary> Produce number of arguments for the given operator
         private int NumberOfArguments(string token)
         {
             switch (token)

@@ -7,13 +7,12 @@ namespace calculator.web.Controllers
     [Route("[controller]")]
     public class CalculatorController : ControllerBase
     {
-        private readonly ICalculator  _Calculator;
+        private readonly ICalculator _Calculator;
 
         public CalculatorController(ICalculator calculator)
         {
             _Calculator = calculator;
         }
-
 
         [HttpGet("calculate")]
         public ActionResult Get(string input)
@@ -27,8 +26,6 @@ namespace calculator.web.Controllers
             {
                 return BadRequest(e.Message);
             }
-
-            
         }
     }
 }
