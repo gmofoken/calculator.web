@@ -79,8 +79,6 @@ namespace calculator.web.Services.Implementation
 
         /// <summary>
         /// Initialize new instance of MathParser
-        /// </summary>
-        /// <param name="decimalSeparator">Set decimal separator</param>
         public Calculator(char decimalSeparator)
         {
             this.decimalSeparator = decimalSeparator;
@@ -134,8 +132,7 @@ namespace calculator.web.Services.Implementation
             StringBuilder formattedString = new StringBuilder();
             int balanceOfParenth = 0; // Check number of parenthesis
 
-            // Format string in one iteration and check number of parenthesis (this function do 2
-            // tasks because performance priority)
+            // Format string in one iteration and check number of parenthesis 
             for (int i = 0; i < expression.Length; i++)
             {
                 char ch = expression[i];
