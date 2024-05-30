@@ -44,10 +44,9 @@ namespace calculator.web
 
             services.AddSingleton<ICalculator, Calculator>();
 
-            services.AddCors(c =>
-            {
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            });
+            services.AddCors();
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +56,15 @@ namespace calculator.web
             {
                 app.UseDeveloperExceptionPage();
             }
+
+
+
+            app.UseCors
+                (x =>
+                    x.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                );
 
             app.UseSwagger();
 
@@ -75,8 +83,6 @@ namespace calculator.web
             {
                 endpoints.MapControllers();
             });
-
-            app.UseCors(options => options.AllowAnyOrigin());
         }
     }
 }
